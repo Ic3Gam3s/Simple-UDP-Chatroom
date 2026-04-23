@@ -1,0 +1,8 @@
+# Ignore object files, libraries, executables, and other build artifacts
+*.o
+*.so
+*.a
+*.exe
+*.out
+*.dll
+*.dylib
