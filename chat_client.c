@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-// Libary zur Arbeit mit der Kommandozeile -> IO von Nachrichten nicht blockierend
+// Library zur Arbeit mit der Kommandozeile -> IO von Nachrichten nicht blockierend
 #include <readline/readline.h>
 #include <readline/history.h>
 
