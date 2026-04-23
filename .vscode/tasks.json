@@ -1,0 +1,58 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Server",
+            "type": "shell",
+            "command": "gcc",
+            "args": [
+                "-o",
+                "srv",
+                "chat_server.c",
+                "sock_util.c"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Build Client",
+            "type": "shell",
+            "command": "gcc",
+            "args": [
+                "-o",
+                "clnt",
+                "chat_client.c",
+                "sock_util.c",
+                "-lreadline"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Build All",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "gcc -o srv chat_server.c sock_util.c && gcc -o clnt chat_client.c sock_util.c -lreadline"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        }
+    ]
+}
