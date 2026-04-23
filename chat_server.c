@@ -231,7 +231,6 @@ void handleChat(int sockfd, struct sockaddr *cliaddr, socklen_t clilen)
         }
 
         /* Antwort zusammenbauen und zurückschicken an alle Verbundenen Clients*/
-        /*[Client Username] Message*/
         sprintf(msg2, "[%s] %s\r\n", sender_username, msg);
         size_t msg_len = strlen(msg2);
         for (size_t j = 0; j < client_count; j++)
