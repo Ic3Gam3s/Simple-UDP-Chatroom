@@ -17,6 +17,10 @@ typedef struct client_info {
     struct sockaddr_in addr;
 } client_info;
 
+// Whitelist Array
+struct in_addr whitelist[100];
+int whitelist_count = 0; // Anzahl der IP-Adressen in der Whitelist
+
 client_info clients[MAXCLIENTS];
 int client_count = 0;
 
@@ -27,6 +31,10 @@ int main(void)
 {
     int sockfd;
     struct sockaddr_in srvaddr, cliaddr;
+
+    /* Whitelist initialisieren */
+    whitelist[0].s_addr = htonl(INADDR_LOOPBACK); // Localhost (127.0.0.1)
+    whitelist_count = 1;
 
     /* 1. Socket anlegen (UDP = SOCK_DGRAM) */
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -186,6 +194,17 @@ void handleCommand(int sockfd, struct sockaddr *cliaddr, socklen_t clilen, char*
     }
 }
 
+
+
+bool is_IP_on_Whitelist(struct sockaddr_in *cliaddr_in) {
+    for (int i = 0; i < whitelist_count; i++) {
+        if (whitelist[i].s_addr == cliaddr_in->sin_addr.s_addr) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void handleChat(int sockfd, struct sockaddr *cliaddr, socklen_t clilen)
 {
     ssize_t   n;
@@ -200,6 +219,13 @@ void handleChat(int sockfd, struct sockaddr *cliaddr, socklen_t clilen)
         n = recvfrom(sockfd, msg, MAXMSG, 0, cliaddr, &len);
         if (n < 0)
             err_abort("recvfrom() fails");
+
+        if (!is_IP_on_Whitelist((struct sockaddr_in *)cliaddr))
+        {
+            // Nachricht von nicht zugelassenem Client verwerfen
+            continue;
+        }
+        
 
         /* NewLine entfernen */
         if (n > 0 && (msg[n-1] == '\n' || msg[n-1] == '\r')) {
