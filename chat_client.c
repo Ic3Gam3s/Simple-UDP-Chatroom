@@ -19,8 +19,8 @@
 #define MAXMSG    512
 
 int sockfd_global;  // Global variable for use in callbacks
-struct sockaddr_in srvaddr_global;  // Global server address
-socklen_t srvlen_global;  // Global server address length
+struct sockaddr_in srvaddr_global;  // Globale Serveradresse
+socklen_t srvlen_global;  // Globale Laenge der Serveradresse
 
 void dg_cli(int sockfd, struct sockaddr *srvaddr, socklen_t srvlen);
 
@@ -50,11 +50,11 @@ int main(int argc, char *argv[])
 void process_input_line(char *line)
 {
     if (line == NULL) {
-        // EOF reached
+        // EOF
         exit(0);
     }
     
-    // Add to history
+    // Line in History laden
     add_history(line);
     
     char sendline[MAXMSG];
@@ -64,7 +64,7 @@ void process_input_line(char *line)
     
     size_t n = strlen(sendline);
     
-    /* Ensure message ends with \r\n */
+    /* Nachrichtenende Sicherstellen - \r\n */
     if (n > 0 && sendline[n-1] == '\n') {
         sendline[n-1] = '\r';
         sendline[n] = '\n';
@@ -95,7 +95,7 @@ void dg_cli(int sockfd, struct sockaddr *srvaddr, socklen_t srvlen)
     srvaddr_global = *(struct sockaddr_in *)srvaddr;
     srvlen_global = srvlen;
 
-    // Setup readline to use callback handler for non-blocking input
+    // Readline Callback installieren
     rl_callback_handler_install("> ", process_input_line);
 
     while (1) {
@@ -113,13 +113,13 @@ void dg_cli(int sockfd, struct sockaddr *srvaddr, socklen_t srvlen)
 
             recvline[n] = '\0';
             
-            // Redraw the prompt with the received message
+            // Promt erneut ausgeben -> Nachricht über der aktuellen Eingabe anzeigen
             printf("\r\n%s", recvline);
             if (recvline[n-1] != '\n')
                 printf("\n");
             fflush(stdout);
             
-            // Redraw the current readline prompt
+            // Eingabeaufforderung und aktuelle Eingabe erneut anzeigen
             rl_forced_update_display();
         }
 
@@ -128,5 +128,5 @@ void dg_cli(int sockfd, struct sockaddr *srvaddr, socklen_t srvlen)
         }
     }
     
-    rl_callback_handler_remove();
+    rl_callback_handler_remove(); // Cleanup Readline callback handler
 }

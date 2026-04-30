@@ -17,7 +17,7 @@ typedef struct client_info {
     struct sockaddr_in addr;
 } client_info;
 
-client_info clients[MAXCLIENTS]; // Array to store client information
+client_info clients[MAXCLIENTS];
 int client_count = 0;
 
 /* Vorwärtsdeklaration */
@@ -41,19 +41,18 @@ int main(void)
     if (bind(sockfd, (struct sockaddr *)&srvaddr, sizeof(srvaddr)) < 0)
         err_abort("Cannot bind socket-address");
 
-    /* 4. Echo-Schleife starten */
+    /* 4. Chat-Schleife starten */
     handleChat(sockfd, (struct sockaddr *)&cliaddr, sizeof(cliaddr));
 
     return 0;
 }
 
 bool is_username_valid(const char* name) {
-    /* Is Username length ok*/
     if (strlen(name) == 0 || strlen(name) > 15) {
-        return false; // Username zu lang
+        return false; // Username zu lang oder leer
     }
 
-    /* Is Username taken? */
+
     for (size_t i = 0; i < client_count; i++)
     {
         if (strcmp(clients[i].username, name) == 0) {
@@ -75,7 +74,6 @@ char* is_client_registered(struct sockaddr *cliaddr) {
 }
 
 void send_good_response(int sockfd, struct sockaddr *cliaddr, socklen_t clilen) {
-    /*Good Response is Text /ok\r\n*/
     char msg[] = "/ok\r\n";
     size_t msg_len = strlen(msg);
     if (sendto(sockfd, msg, msg_len, 0, cliaddr, clilen) != (ssize_t)msg_len) {
@@ -84,7 +82,6 @@ void send_good_response(int sockfd, struct sockaddr *cliaddr, socklen_t clilen) 
 }
 
 void send_error_response(int sockfd, struct sockaddr *cliaddr, socklen_t clilen) {
-    /*Error Response is Text /error\r\n*/
     char msg[] = "/error\r\n";
     size_t msg_len = strlen(msg);
     if (sendto(sockfd, msg, msg_len, 0, cliaddr, clilen) != (ssize_t)msg_len) {
@@ -101,7 +98,6 @@ bool handle_nick(int sockfd, struct sockaddr *cliaddr, socklen_t clilen, char* c
         return false;
     }
 
-    /* Username is valid, save it and send good response */
     int i;
     for (i = 0; i < client_count; i++) {
         if (memcmp(&clients[i].addr, cliaddr, sizeof(struct sockaddr_in)) == 0) {
@@ -147,7 +143,7 @@ bool handle_names(int sockfd, struct sockaddr *cliaddr, socklen_t clilen) {
 
 void handleCommand(int sockfd, struct sockaddr *cliaddr, socklen_t clilen, char* command) {
     
-    /* Remove trailing newline */
+    /* NewLine entfernen */
     size_t cmd_len = strlen(command);
     if (cmd_len > 0 && (command[cmd_len-1] == '\n' || command[cmd_len-1] == '\r')) {
         command[cmd_len-1] = '\0';
@@ -205,7 +201,7 @@ void handleChat(int sockfd, struct sockaddr *cliaddr, socklen_t clilen)
         if (n < 0)
             err_abort("recvfrom() fails");
 
-        /* Remove trailing newline/carriage return */
+        /* NewLine entfernen */
         if (n > 0 && (msg[n-1] == '\n' || msg[n-1] == '\r')) {
             msg[n-1] = '\0';
             n--;
