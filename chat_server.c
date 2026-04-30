@@ -220,9 +220,12 @@ void handleChat(int sockfd, struct sockaddr *cliaddr, socklen_t clilen)
         if (n < 0)
             err_abort("recvfrom() fails");
 
+        printf("Received message from %s:%d\n", inet_ntoa(((struct sockaddr_in *)cliaddr)->sin_addr), ntohs(((struct sockaddr_in *)cliaddr)->sin_port));
+
         if (!is_IP_on_Whitelist((struct sockaddr_in *)cliaddr))
         {
             // Nachricht von nicht zugelassenem Client verwerfen
+            printf("Client %s:%d is not on the whitelist. Message discarded.\n", inet_ntoa(((struct sockaddr_in *)cliaddr)->sin_addr), ntohs(((struct sockaddr_in *)cliaddr)->sin_port));
             continue;
         }
         
@@ -249,6 +252,7 @@ void handleChat(int sockfd, struct sockaddr *cliaddr, socklen_t clilen)
         
         // Nachricht von unbekanntem Client verwerfen
         if (sender_username == NULL) {
+            printf("Received message from unregistered client %s:%d. Message discarded.\n", inet_ntoa(((struct sockaddr_in *)cliaddr)->sin_addr), ntohs(((struct sockaddr_in *)cliaddr)->sin_port));
             continue;
         }
 
